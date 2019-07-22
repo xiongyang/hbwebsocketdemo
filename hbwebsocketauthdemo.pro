@@ -24,7 +24,9 @@ unix
 {
 
 DEFINES += BOOST_LOG_DYN_LINK linux
-LIBS += -lrt -lz -lboost_system -lboost_iostreams
+INCLUDEPATH +=/root/workspace/boost_1_67_0/
+LIBS += -L/root/workspace/boost_1_67_0/stage/lib -lboost_system -lboost_iostreams
+LIBS += -lrt -lz 
 }
 
 # The following define makes your compiler emit warnings if you use
