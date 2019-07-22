@@ -19,6 +19,14 @@ DEFINES +=_WIN32_WINNT=0x0601
 #QMAKE_CXXFLAGS += /MP
 }
 
+
+unix
+{
+
+DEFINES += BOOST_LOG_DYN_LINK linux
+LIBS += -lrt -lz -lboost_system -lboost_iostreams
+}
+
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
