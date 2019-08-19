@@ -9,6 +9,8 @@
 #include <QJsonDocument>
 #include <QString>
 #include <QMessageAuthenticationCode>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 
 #include <boost/iostreams/filter/gzip.hpp>
@@ -38,13 +40,36 @@ public:
 
 
         QTimer::singleShot(100, [=](){
-		this->doTest();
+            this->doTest();
         });
 
+        qnam = new QNetworkAccessManager(this);
+        connect(qnam, &QNetworkAccessManager::finished, this, &zbwebsocketauth::replyFinished);
 
+
+        QTimer* timer =  new QTimer(this);
+        connect(timer, &QTimer::timeout, this, &zbwebsocketauth::doQuery);
+        timer->start(300);
     }
 
     virtual ~zbwebsocketauth() {}
+
+    void doQuery()
+    {
+        getRequest();
+    }
+
+
+    void replyFinished(QNetworkReply *reply)
+    {
+        if(replay->error())
+        {
+            std::cout << "reply error " << std::endl;
+        }
+        else {
+            std::cout << "reply " << reply->readAll().toStdString() << "\n";
+        }
+    }
 
     void doTest()
     {
@@ -61,18 +86,7 @@ public:
 	    {
 		    QJsonObject json;
 		    json.insert("event", "addChannel");
-		    json.insert("channel",  "ltcbtc_depth");
-		    QJsonDocument jsondoc;
-		    jsondoc.setObject(json);
-		    QByteArray ba = jsondoc.toJson(QJsonDocument::Compact);
-		    QString jsonstr(ba);
-		    dataSock->sendTextMessage(jsonstr);
-	    }
-
-	    {
-		    QJsonObject json;
-		    json.insert("event", "addChannel");
-		    json.insert("channel",  "ltcbtc_trades");
+            json.insert("channel",  "ltcusdt_depth");
 		    QJsonDocument jsondoc;
 		    jsondoc.setObject(json);
 		    QByteArray ba = jsondoc.toJson(QJsonDocument::Compact);
@@ -94,10 +108,35 @@ public:
         std::cout << "onTextMessageReceived:" << msg.toStdString()  << std::endl;
     }
 
+    void getRequest()
+    {
+
+        std::map<QString, QString> ps(params);
+
+        QString rs("http://api.zb.cn/data/v1/depth?market=%1&size=50");
+        rs.arg("ltc_usdt");
+        QUrl url = rs;
+        QNetworkRequest request(url);
+
+
+        request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36");
+        //request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+        QNetworkReply* reply = qnam->get(request);
+
+        //    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
+        //            this, SLOT(requestError(QNetworkReply::NetworkError)));
+        //     qDebug() << "after Request connect " ;
+        // connect(reply, &QNetworkReply::finished, [reply,this](){this->getFinished(reply);});
+        // connect(reply, &QNetworkReply::error, this, &BtcOrder::requestError);
+        return reply;
+    }
+
+
     QWebSocket*  dataSock;
     std::string gAccessKey;
     std::string gSecretKey;
-
+    QNetworkAccessManager* qnam;
 
 };
 
