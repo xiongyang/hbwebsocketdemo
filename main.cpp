@@ -4,8 +4,21 @@
 #include <string>
 #include <iostream>
 #include "hbwebsocketauth.h"
+#include "zbwebsocket.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char** argv)
+{
+    QCoreApplication a(argc, argv);
+
+
+    zbwebsocketauth demo(nullptr, "" , "");
+
+    return a.exec();
+
+
+}
+
+int main1(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 

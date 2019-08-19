@@ -36,6 +36,12 @@ public:
         connect(dataSock,&QWebSocket::binaryMessageReceived , this, &zbwebsocketauth::onWsAccountFreeBinaryMessageReceived);
         connect(dataSock,&QWebSocket::textMessageReceived , this, &zbwebsocketauth::onTextMessageReceived);
 
+
+        QTimer::singleShot(100, [=](){
+		this->doTest();
+        });
+
+
     }
 
     virtual ~zbwebsocketauth() {}
