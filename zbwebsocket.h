@@ -57,16 +57,28 @@ public:
 
     void onWsAccountFreeConnected()
     {
-        std::cout << "onWsAccountFreeConnected " << std::endl;
+	    std::cout << "onWsAccountFreeConnected " << std::endl;
+	    {
+		    QJsonObject json;
+		    json.insert("event", "addChannel");
+		    json.insert("channel",  "ltcbtc_depth");
+		    QJsonDocument jsondoc;
+		    jsondoc.setObject(json);
+		    QByteArray ba = jsondoc.toJson(QJsonDocument::Compact);
+		    QString jsonstr(ba);
+		    dataSock->sendTextMessage(jsonstr);
+	    }
 
-        QJsonObject json;
-        json.insert("event", "addChannel");
-        json.insert("channel",  "ltcbtc_ticker");
-        QJsonDocument jsonDoc;
-        jsonDoc.setObject(json);
-        QByteArray ba = jsonDoc.toJson(QJsonDocument::Compact);
-        QString jsonStr(ba);
-        dataSock->sendTextMessage(jsonStr);
+	    {
+		    QJsonObject json;
+		    json.insert("event", "addChannel");
+		    json.insert("channel",  "ltcbtc_trades");
+		    QJsonDocument jsondoc;
+		    jsondoc.setObject(json);
+		    QByteArray ba = jsondoc.toJson(QJsonDocument::Compact);
+		    QString jsonstr(ba);
+		    dataSock->sendTextMessage(jsonstr);
+	    }
     }
     void onWsAccountFreeDisconnected()
     {
@@ -79,7 +91,7 @@ public:
 
     void onTextMessageReceived(const QString& msg)
     {
-        std::cout << "onTextMessageReceived " << msg.toStdString();
+        std::cout << "onTextMessageReceived:" << msg.toStdString()  << std::endl;
     }
 
     QWebSocket*  dataSock;
