@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
         return 0;
     }
     std::string gAccessKey = argv[1];
-     std::string gSecretKey = argv[2];
+    std::string gSecretKey = argv[2];
     std::cout  << "Test Auth Using " << gAccessKey << "  " << gSecretKey << std::endl;
 
     hbwebsocketauth demo(nullptr,gAccessKey, gSecretKey);
