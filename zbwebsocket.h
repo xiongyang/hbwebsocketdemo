@@ -62,7 +62,7 @@ public:
 
     void replyFinished(QNetworkReply *reply)
     {
-        if(replay->error())
+        if(reply->error())
         {
             std::cout << "reply error " << std::endl;
         }
@@ -108,14 +108,13 @@ public:
         std::cout << "onTextMessageReceived:" << msg.toStdString()  << std::endl;
     }
 
-    void getRequest()
+    QNetworkReply* getRequest()
     {
 
-        std::map<QString, QString> ps(params);
+        std::map<QString, QString> ps;
 
         QString rs("http://api.zb.cn/data/v1/depth?market=%1&size=50");
-        rs.arg("ltc_usdt");
-        QUrl url = rs;
+        QUrl url = rs.arg("ltc_usdt");
         QNetworkRequest request(url);
 
 
