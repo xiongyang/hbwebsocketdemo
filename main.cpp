@@ -5,6 +5,7 @@
 #include <iostream>
 #include "hbwebsocketauth.h"
 #include "zbwebsocket.h"
+#include "mxcwebsocket.h"
 
 int main(int argc, char** argv)
 {
@@ -31,7 +32,7 @@ int main1(int argc, char *argv[])
     std::string gSecretKey = argv[2];
     std::cout  << "Test Auth Using " << gAccessKey << "  " << gSecretKey << std::endl;
 
-    hbwebsocketauth demo(nullptr,gAccessKey, gSecretKey);
+    mxcwebsocketauth demo(nullptr,gAccessKey, gSecretKey);
 
     return a.exec();
 }
