@@ -23,9 +23,9 @@ DEFINES +=_WIN32_WINNT=0x0601
 unix
 {
 
+INCLUDEPATH +=$$(BOOST_PATH)
 DEFINES += BOOST_LOG_DYN_LINK linux
-INCLUDEPATH +=/root/workspace/boost_1_67_0/
-LIBS += -L/root/workspace/boost_1_67_0/stage/lib -lboost_system -lboost_iostreams
+LIBS += -L$$(BOOST_PATH)/stage/lib -lboost_system -lboost_iostreams
 LIBS += -lrt -lz 
 }
 
