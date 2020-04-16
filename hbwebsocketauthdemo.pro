@@ -43,6 +43,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         hbwebsocketauth.cpp \
         main.cpp \
+        mxcwebsocket.cpp \
         zbwebsocket.cpp
 
 # Default rules for deployment.
@@ -52,4 +53,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     hbwebsocketauth.h \
+    mxcwebsocket.h \
     zbwebsocket.h

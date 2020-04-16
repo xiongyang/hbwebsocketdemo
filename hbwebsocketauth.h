@@ -20,8 +20,6 @@
 #include <sstream>
 #include <map>
 
-
-
 class hbwebsocketauth : public QObject
 {
     Q_OBJECT
