@@ -7,7 +7,9 @@
 #include "zbwebsocket.h"
 #include "mxcwebsocket.h"
 
-int main(int argc, char** argv)
+
+
+int testzb(int argc, char** argv)
 {
     QCoreApplication a(argc, argv);
 
@@ -19,7 +21,7 @@ int main(int argc, char** argv)
 
 }
 
-int main1(int argc, char *argv[])
+int testhb(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
@@ -32,7 +34,22 @@ int main1(int argc, char *argv[])
     std::string gSecretKey = argv[2];
     std::cout  << "Test Auth Using " << gAccessKey << "  " << gSecretKey << std::endl;
 
-    mxcwebsocketauth demo(nullptr,gAccessKey, gSecretKey);
+    hbwebsocketauth demo(nullptr,gAccessKey, gSecretKey);
 
     return a.exec();
+}
+
+int testmxc(int argc, char** argv)
+{
+
+    QCoreApplication a(argc, argv);
+
+    mxcwebsocketauth demo(nullptr, "" , "");
+
+    return a.exec();
+}
+
+int main(int argc, char** argv)
+{
+    return testmxc(argc,argv);
 }
