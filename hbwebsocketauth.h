@@ -30,11 +30,12 @@ public:
         accountFreeSock = new QWebSocket(QString(), QWebSocketProtocol::VersionLatest,this);
         connect(accountFreeSock,&QWebSocket::connected, this,  &hbwebsocketauth::onWsAccountFreeConnected);;
         connect(accountFreeSock,&QWebSocket::disconnected , this, &hbwebsocketauth::onWsAccountFreeDisconnected);
-        connect(accountFreeSock,&QWebSocket::binaryMessageReceived , this, &hbwebsocketauth::onWsAccountFreeBinaryMessageReceived);
+        connect(accountFreeSock,&QWebSocket::textMessageReceived , this, &hbwebsocketauth::onWsAccountFreeBinaryMessageReceived);
 
 
         QTimer::singleShot(100, [=](){
-            QUrl url("wss://api.huobi.pro/ws/v1");
+            //QUrl url("wss://api.huobi.pro/ws/v1");
+            QUrl url("wss://api.huobi.pro/ws/v2");
             accountFreeSock->open(url);
             std::cout << "Do Connect " << std::endl;
         });
@@ -50,11 +51,12 @@ public:
 
          std::map<QString, QString> ps;
 
-         ps["AccessKeyId"] = gAccessKey.c_str();
-         ps["SignatureMethod"] = "HmacSHA256";
-         ps["SignatureVersion"] = "2";
+         ps["accessKey"] = gAccessKey.c_str();
+         ps["signatureMethod"] = "HmacSHA256";
+         ps["signatureVersion"] = "2.1";
          std::string dateStrConvented = currentDateTime();
-         ps["Timestamp"] = dateStrConvented.c_str();
+        // ps["timestamp"] = dateStrConvented.c_str();
+        ps["timestamp"] = convertDateTimeOrg(dateStrConvented).c_str();
 
 
 
@@ -67,8 +69,9 @@ public:
          apikey.resize(apikey.size()-1);
 
          QByteArray  calcString;
-         calcString.append("GET\napi.huobi.pro\n/ws/v1\n");
+         calcString.append("GET\napi.huobi.pro\n/ws/v2\n");
          calcString.append(apikey);
+
 
 
 
@@ -78,16 +81,24 @@ public:
 
          std::cout << "String to Sing :" << calcString.toStdString() << std::endl;
          std::cout << "auth Sign      :" << sign.toStdString() << std::endl;
+
+         QJsonObject params;
+         params.insert("authType","api");
+         params.insert("accessKey",  ps["accessKey"]);
+         params.insert("signatureMethod", ps["signatureMethod"]);
+         params.insert("signatureVersion", ps["signatureVersion"]);
+         params.insert("timestamp", convertDateTimeOrg(dateStrConvented).c_str());
+         params.insert("signature", QString(sign));
+
+         
          QJsonObject json;
-         json.insert("op", "auth");
-         json.insert("AccessKeyId",  ps["AccessKeyId"]);
-         json.insert("SignatureMethod", ps["SignatureMethod"]);
-         json.insert("SignatureVersion", ps["SignatureVersion"]);
-         json.insert("Timestamp", convertDateTimeOrg(dateStrConvented).c_str());
-         json.insert("Signature", QString(sign));
+         json.insert("action", "req");
+         json.insert("ch", "auth");
+         json.insert("params", params);
          QJsonDocument jsonDoc;
          jsonDoc.setObject(json);
          QByteArray ba = jsonDoc.toJson(QJsonDocument::Compact);
+//         QByteArray ba = jsonDoc.toJson();
          QString jsonStr(ba);
 
      //    QString jsonStrFormat;
@@ -100,19 +111,19 @@ public:
     {
         std::cout << "onWsAccountFreeDisconnected " << std::endl;
     }
-    void onWsAccountFreeBinaryMessageReceived(const QByteArray &message)
+    void onWsAccountFreeBinaryMessageReceived(const QString& message)
     {
-        QByteArray baUnpack;
-        bool bResult = gzipDecompress(message, baUnpack);
-        if (!bResult)
-        {
-            std::cout << "unPack Error Receive Data " << message.toStdString() << std::endl;
-            return;
-        }
-        std::cout  << "onWsAccountFreeBinaryMessageReceived recv " << baUnpack.toStdString() << std::endl;
+   //     QByteArray baUnpack;
+   //     bool bResult = gzipDecompress(message, baUnpack);
+   //     if (!bResult)
+   //     {
+   //         std::cout << "unPack Error Receive Data " << message.toStdString() << std::endl;
+   //         return;
+   //     }
+        std::cout  << "onWsAccountFreeBinaryMessageReceived recv " << message.toStdString() << std::endl;
 
         QJsonParseError jsonError;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(baUnpack, &jsonError);
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(message.toLatin1(), &jsonError);
         if(jsonError.error != QJsonParseError::NoError) return;
 
         if(!jsonDoc.isObject()) return;
