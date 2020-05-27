@@ -20,6 +20,16 @@
 #include <sstream>
 #include <map>
 
+
+#define HB_COLO
+
+#ifdef HB_COLO
+#define  huobi_host   "807163341442.coloc.huobi.com"
+#else
+#define huobi_host  "api-aws.huobi.pro"
+#endif
+
+
 class hbwebsocketauth : public QObject
 {
     Q_OBJECT
@@ -35,7 +45,11 @@ public:
 
         QTimer::singleShot(100, [=](){
             //QUrl url("wss://api.huobi.pro/ws/v1");
-            QUrl url("wss://api.huobi.pro/ws/v2");
+#ifdef HB_COLO
+            QUrl url("ws://" huobi_host "/ws/v2");
+#else
+            QUrl url("wss://"huobi_host"/ws/v2");
+#endif
             accountFreeSock->open(url);
             std::cout << "Do Connect " << std::endl;
         });
@@ -47,16 +61,13 @@ public:
     void onWsAccountFreeConnected()
     {
          std::cout << "onWsAccountFreeConnected " << std::endl;
-
-
          std::map<QString, QString> ps;
-
          ps["accessKey"] = gAccessKey.c_str();
          ps["signatureMethod"] = "HmacSHA256";
          ps["signatureVersion"] = "2.1";
          std::string dateStrConvented = currentDateTime();
-        // ps["timestamp"] = dateStrConvented.c_str();
-        ps["timestamp"] = convertDateTimeOrg(dateStrConvented).c_str();
+         ps["timestamp"] = dateStrConvented.c_str();
+        //ps["timestamp"] = convertDateTimeOrg(dateStrConvented).c_str();
 
 
 
@@ -69,7 +80,7 @@ public:
          apikey.resize(apikey.size()-1);
 
          QByteArray  calcString;
-         calcString.append("GET\napi.huobi.pro\n/ws/v2\n");
+         calcString.append("GET\n" huobi_host "\n/ws/v2\n");
          calcString.append(apikey);
 
 
@@ -90,7 +101,7 @@ public:
          params.insert("timestamp", convertDateTimeOrg(dateStrConvented).c_str());
          params.insert("signature", QString(sign));
 
-         
+
          QJsonObject json;
          json.insert("action", "req");
          json.insert("ch", "auth");
